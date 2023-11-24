@@ -181,7 +181,10 @@ services:
     depends_on:
       opi-spdk-server:
         condition: service_healthy
-    command: storage test --addr opi-spdk-server:50051
+    entrypoint: |
+      sh -x -c '/dpu storage test --addr opi-spdk-server:50051 && \
+      ss0=$$(/dpu storage create nvme subsystem --nqn nqn.2019-06.io.spdk:opicli0 --hostnqn nqn.2019-06.io.spdk:opi-host0 --id subsys0 --addr=opi-spdk-server:50051) && \
+      /dpu storage delete nvme subsystem --name "$$ss0" --addr=opi-spdk-server:50051'
 
   opi-test:
     image: docker.io/library/alpine:3.18
